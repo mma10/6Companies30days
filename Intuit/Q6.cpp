@@ -1,52 +1,57 @@
+/**
+ * // This is the MountainArray's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * class MountainArray {
+ *   public:
+ *     int get(int index);
+ *     int length();
+ * };
+ */
+
 class Solution {
 public:
-    int findInMountainArray(int target, MountainArray &mountainArr) {
-        int peakIndex = -1;
-        int n = mountainArr.length();
-        int low = 0, high = n-1;
-        while(low <= high){
-            int mid = low + (high-low)/2;
-            int next = (mid+1)%n;
-            if(mountainArr.get(mid) > mountainArr.get(next)){
-                peakIndex = mid;
-                high = mid-1;
-            }else{
-                low = mid+1;
-            }
-        }
-        
-        low = 0, high = peakIndex;
-        int minIndex = -1;
-        while(low <= high){
-            int mid = low + (high-low)/2;
-            if(mountainArr.get(mid) == target){
-                minIndex = mid;
-                high = mid-1;
-            }else if(mountainArr.get(mid) > target){
-                high = mid-1;
+    int binarySearch(MountainArray &arr,int l,int r,int target,bool nonDec){
+        while(l < r){
+            int mid = l + (r-l) / 2;
+            int num = arr.get(mid);
+            if(num == target)
+                return mid;
+            if(nonDec){
+                if(target < num)
+                    r = mid;
+                else
+                    l = mid+1;
             }
             else{
-                low = mid+1;
+                if(target < num)
+                    l = mid+1;
+                else
+                    r = mid;
             }
         }
-        
-        if(minIndex != -1)
-            return minIndex;
-        
-        low = peakIndex+1, high = n-1;
-        while(low <= high){
-            int mid = low + (high-low)/2;
-            if(mountainArr.get(mid) == target){
-                minIndex = mid;
-                high = mid-1;
-            }else if(mountainArr.get(mid) < target){
-                high = mid-1;
-            }
-            else{
-                low = mid+1;
-            }
+        if(arr.get(l) == target)
+            return l;
+        return -1;
+    }
+    
+    int findInMountainArray(int target, MountainArray &arr) {
+        int n = arr.length(), l = 0, r = n-1, peak = -1;
+        while(l < r){
+            int mid = l + (r-l) / 2; 
+            int num1 = arr.get(mid), num2 = arr.get(mid+1);               
+            if(num1 < num2)
+                l = mid+1;
+            else
+                r = mid;             
         }
+        peak = l;
         
-        return minIndex;
+        int index1 = binarySearch(arr,0,peak-1,target,true);
+        if(index1 != -1)
+            return index1;
+        int index2 = binarySearch(arr,peak,n-1,target,false);
+        if(index2 != -1)
+            return index2;
+        return -1;
     }
 };
