@@ -11,25 +11,28 @@ class Solution{
 public:
     int lengthOfLongestAP(int arr[], int n) {
         // code here
-        
-       if(n == 1) 
+        if(n == 1)
             return 1;
-       if(n == 2) 
-            return 2;
-       
-       vector<unordered_map<int,int>> dp(n);
-       int ans = 0;
-       for(int i = 1; i < n; i++){
-           for(int j = 0; j < i; j++){
-               int diff = arr[i] - arr[j];
-               if(dp[j].find(diff) == dp[j].end())
-                   dp[i][diff] = 2;
-               else
-                   dp[i][diff] = dp[j][diff] + 1;
-               ans = max(ans,dp[i][diff]);
-           }
-       }
-       return ans;
+        int ans = 2;
+        vector<vector<int>> dp(n,vector<int>(n,2));
+        for(int i = n-1; i >= 0; i--){
+            unordered_map <int,int> indexes;
+            for(int j = i+1; j < n; j++){
+                if(indexes.count(arr[j]) == 0)
+                    indexes[arr[j]] = j;
+            }
+            for(int j = i+1; j < n; j++){
+                indexes.erase(arr[j]);
+                int ele1 = arr[i], ele2 = arr[j];
+                int search = 2*ele2 - ele1;
+                if(indexes.count(search) == 1){
+                    int k = indexes[search];
+                    dp[i][j] = dp[j][k] + 1;
+                    ans = max(ans,dp[i][j]);
+                }
+            }
+        }
+        return ans;
     }
 };
 
